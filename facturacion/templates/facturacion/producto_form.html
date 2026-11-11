@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+
+<!-- Contenedor principal del formulario -->
+<div class="row justify-content-center">
+
+    <div class="col-md-8">
+
+        <div class="tarjeta">
+
+            <!-- Título del formulario -->
+            <h2 class="titulo-pagina mb-4">
+                {{ titulo }}
+            </h2>
+
+            <!-- Formulario para registrar y editar productos -->
+            <form method="post">
+
+                <!-- Protección de seguridad de Django -->
+                {% csrf_token %}
+
+                <!-- Mostrar errores generales -->
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+                <!-- Recorrer los campos del formulario -->
+                {% for campo in form %}
+
+                    <div class="mb-3">
+
+                        <!-- CASO 1: Selección de categorías -->
+                        {% if campo.name == "categorias" %}
+
+                            <label class="form-label fw-bold">
+                                {{ campo.label }}
+                            </label>
+
+                            <div class="border rounded p-3 bg-light">
+
+                                {% for opcion in campo %}
+
+                                    <div class="form-check mb-2">
+
+                                        {{ opcion.tag }}
+
+                                        <label
+                                            class="form-check-label"
+                                            for="{{ opcion.id_for_label }}"
+                                        >
+                                            {{ opcion.choice_label }}
+                                        </label>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        <!-- CASO 2: Casilla de producto activo -->
+                        {% elif campo.name == "activo" %}
+
+                            <div class="form-check">
+
+                                {{ campo }}
+
+                                <label
+                                    class="form-check-label"
+                                    for="{{ campo.id_for_label }}"
+                                >
+                                    {{ campo.label }}
+                                </label>
+
+                            </div>
+
+                        <!-- CASO 3: Campos normales -->
+                        {% else %}
+
+                            <label
+                                class="form-label"
+                                for="{{ campo.id_for_label }}"
+                            >
+                                {{ campo.label }}
+                            </label>
+
+                            {{ campo }}
+
+                        {% endif %}
+
+                        <!-- Mostrar errores de validación -->
+                        {% for error in campo.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+                <!-- Botones del formulario -->
+                <div class="d-flex gap-2 mt-4">
+
+                    <!-- Guardar información -->
+                    <button
+                        type="submit"
+                        class="btn btn-verde"
+                    >
+                        {{ boton }}
+                    </button>
+
+                    <!-- Regresar sin guardar -->
+                    <a
+                        href="{% url 'facturacion:producto_lista' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

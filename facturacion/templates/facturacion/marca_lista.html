@@ -1,0 +1,53 @@
+{% extends "base.html" %}                             {# Usa el diseño de base.html #}
+{% block titulo %}{{ titulo }}{% endblock %}          {# Pestaña: "Marcas | Mi Tienda" #}
+
+{% block contenido %}                                 {# Todo esto va en el espacio "contenido" #}
+
+{# ---------- Encabezado: título a la izquierda (el botón Nueva marca llega en el paso 2.14) ---------- #}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h1 class="h3 titulo-pagina m-0">Listado de {{ titulo }}</h1>
+        {# Un enlace siempre hace una petición GET: abre el formulario vacío #}
+    <a href="{% url 'facturacion:marca_crear' %}" class="btn btn-verde">+ Nueva marca</a>
+</div>
+
+{# ---------- Buscador: method="get" envía el texto en la URL como ?q=texto ---------- #}
+<form method="get" class="d-flex gap-2 mb-3">
+    {# name="q" → la vista lo lee con request.GET.get("q"). value="{{ q }}" deja escrito lo que se buscó #}
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar marca...">
+    <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+</form>
+
+{# ---------- Tabla ---------- #}
+<div class="tarjeta p-0 table-responsive">           {# table-responsive: en celular la tabla se desliza de lado #}
+    <table class="table table-hover align-middle m-0">   {# table-hover: la fila se pinta al pasar el mouse #}
+        <thead>                                       {# Encabezado de la tabla #}
+            <tr><th>#</th><th>Nombre</th><th>País de origen</th><th>Estado</th><th class="text-end">Acciones</th></tr>
+        </thead>
+        <tbody>                                       {# Cuerpo: una fila por cada marca #}
+            {% for marca in marcas %}                 {# Recorre la lista "marcas" que envió la vista #}
+            <tr>
+                <td>{{ forloop.counter }}</td>        {# Número de fila: 1, 2, 3... #}
+                <td class="fw-semibold">{{ marca.nombre }}</td>          {# Atributo nombre de la marca #}
+                <td>{{ marca.pais_origen|default:"—" }}</td>             {# Si no tiene país, muestra — #}
+                <td>
+                    {% if marca.activo %}             {# Si activo es True... #}
+                        <span class="badge bg-success">Activo</span>     {# etiqueta verde #}
+                    {% else %}                        {# ...si es False #}
+                        <span class="badge bg-secondary">Inactivo</span> {# etiqueta gris #}
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    {# marca.pk es el id de la marca. Se envía a la URL que espera <int:pk> #}
+                    <a href="{% url 'facturacion:marca_editar' marca.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                    {% if user.is_staff %}<a href="{% url 'facturacion:marca_eliminar' marca.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>{% endif %}
+                </td>
+            </tr>
+            {% empty %}                               {# Si la lista está vacía, se muestra esta fila #}
+            <tr><td colspan="5" class="text-center text-muted py-4">No hay marcas registradas.</td></tr>
+            {% endfor %}                              {# Fin del for #}
+        </tbody>
+    </table>
+</div>
+<p class="text-muted small mt-2">Total: {{ marcas|length }} marca(s)</p>   {# length cuenta las marcas #}
+
+{% endblock %}                                        {# Fin del bloque contenido #}

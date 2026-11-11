@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center"><div class="col-md-8 col-lg-7"><div class="tarjeta">
+    <h1 class="h4 titulo-pagina mb-2">Mi perfil</h1>
+    <p class="text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+    {# GET: muestra MI información. POST: guarda MI perfil, no el de otro usuario #}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for campo in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                {{ campo }}
+                {% for error in campo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-verde">{{ boton }}</button>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Volver al inicio</a>
+    </form>
+</div></div></div>
+{% endblock %}

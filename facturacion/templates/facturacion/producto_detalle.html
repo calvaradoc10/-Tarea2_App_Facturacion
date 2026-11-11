@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titulo %}{{ producto.nombre }}{% endblock %}  {# La pestaña muestra el nombre del producto #}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="tarjeta">
+            <h1 class="h3 titulo-pagina">{{ producto.nombre }}</h1>
+            <p class="text-muted">{{ producto.descripcion|default:"Sin descripción." }}</p>   {# Texto por defecto si está vacía #}
+            <ul class="list-group mb-4">                {# Lista con los datos #}
+                <li class="list-group-item"><b>Marca:</b> {{ producto.marca.nombre }}</li>   {# 1:N #}
+                <li class="list-group-item"><b>Categorías:</b>                                {# N:M #}
+                    {% for categoria in producto.categorias.all %}{{ categoria.nombre }}{% if not forloop.last %}, {% endif %}{% empty %}Sin categoría{% endfor %}
+                </li>                                   {# forloop.last: True en la última vuelta (para no poner la última coma) #}
+                <li class="list-group-item"><b>Precio:</b> ${{ producto.precio }}</li>
+                <li class="list-group-item"><b>Stock:</b> {{ producto.stock }} unidades</li>
+                <li class="list-group-item"><b>Creado:</b> {{ producto.fecha_creacion|date:"d/m/Y H:i" }}</li>  {# día/mes/año hora:minuto #}
+            </ul>
+            <a href="{% url 'facturacion:producto_editar' producto.pk %}" class="btn btn-verde">Editar</a>
+            <a href="{% url 'facturacion:producto_lista' %}" class="btn btn-outline-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

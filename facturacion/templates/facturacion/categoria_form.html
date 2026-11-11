@@ -1,0 +1,22 @@
+{% extends "base.html" %} {# Compartido por crear y editar #}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center"><div class="col-md-8 col-lg-7"><div class="tarjeta">
+    <h1 class="h4 titulo-pagina mb-4">{{ titulo }}</h1>
+    {# GET muestra el formulario; POST valida y guarda en la misma URL #}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for campo in form %}
+            {% if campo.field.widget.input_type == 'checkbox' %}
+                <div class="form-check mb-3">{{ campo }} <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label></div>
+            {% else %}
+                <div class="mb-3"><label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}</div>
+            {% endif %}
+            {% for error in campo.errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+        <button type="submit" class="btn btn-verde">{{ boton }}</button>
+        <a href="{% url 'facturacion:categoria_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </form>
+</div></div></div>
+{% endblock %}

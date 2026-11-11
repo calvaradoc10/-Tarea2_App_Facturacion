@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Clientes{% endblock %}
+{% block contenido %}
+<div class="tarjeta">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h1 class="h3 titulo-pagina m-0">Listado de Clientes</h1>
+        <a href="{% url 'facturacion:cliente_crear' %}" class="btn btn-verde">+ Nuevo cliente</a>
+    </div>
+    {# GET: busca por apellidos o cédula (objetos Q en la vista) #}
+    <form method="get" class="input-group mb-4">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por apellido o cédula...">
+        <button type="submit" class="btn btn-verde">Buscar</button>
+    </form>
+    <div class="table-responsive"><table class="table table-bordered table-hover align-middle">
+        <thead><tr><th>Cédula</th><th>Apellidos</th><th>Nombres</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+        <tbody>
+        {% for cliente in page_obj %}
+            <tr>
+                <td>{{ cliente.cedula }}</td><td>{{ cliente.apellidos }}</td><td>{{ cliente.nombres }}</td>
+                <td>{{ cliente.email|default:"—" }}</td><td>{{ cliente.telefono|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'facturacion:cliente_editar' cliente.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <a href="{% url 'facturacion:cliente_eliminar' cliente.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-3">No hay clientes registrados.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+    {# Paginación: conserva ?q= al cambiar de página #}
+    <div class="d-flex justify-content-between align-items-center">
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <div>
+            {% if page_obj.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?q={{ q|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}
+            {% if page_obj.has_next %}<a class="btn btn-sm btn-verde" href="?q={{ q|urlencode }}&amp;page={{ page_obj.next_page_number }}">Siguiente</a>{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
